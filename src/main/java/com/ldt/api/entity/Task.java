@@ -9,10 +9,11 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Task {
     @Id
     @GeneratedValue
     private Integer id;
     private String name;
+    private Integer taskColumnId;
 
 }

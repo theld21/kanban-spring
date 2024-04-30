@@ -9,7 +9,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Board {
     @Id
     @GeneratedValue
     private Integer id;
