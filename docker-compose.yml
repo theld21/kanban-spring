@@ -1,0 +1,35 @@
+version: "3"
+services:
+  mysqlDb:
+    image: mysql:8.0.22
+    container_name: docker-mysql-springboot-demo-db
+    ports:
+      - ${MYSQLDB_LOCAL_PORT}:3306
+    networks:
+      - network
+    volumes:
+      - volume:/var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQLDB_ROOT_PASSWORD}
+
+  client:
+    tty: true
+    stdin_open: true
+    restart: always
+    command: sh /docker-entrypoint.sh
+    build: ./client
+    ports:
+      - ${PRIVATE_HOST}:${CLIENT_HOST_PORT}:3000
+      - ${PRIVATE_HOST}:${VITE_PORT}:24678
+    environment:
+      HOST: 0.0.0.0
+    volumes:
+      - ${PWD}/client/.:/frontend
+    networks:
+      - network
+
+networks:
+  network:
+
+volumes:
+  volume:
