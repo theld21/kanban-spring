@@ -32,8 +32,8 @@ public class TaskController {
      */
 
     @GetMapping
-    public List<Task> getTasks() {
-        return taskService.getTasks();
+    public List<Task> getTasks(@RequestParam Integer boardId) {
+        return taskService.findByTaskColumnId(boardId);
     }
 
     /**
@@ -61,7 +61,7 @@ public class TaskController {
      */
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
         taskService.deleteTask(id);
 
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class TaskController {
      */
 
     @PatchMapping("/update-name/{id}")
-    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody TaskDTO taskDTO){
+    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody TaskDTO taskDTO) {
         taskService.updateName(id, taskDTO);
 
         return ResponseEntity.noContent().build();

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/taskColumn")
+@RequestMapping("/column")
 public class TaskColumnController {
 
     @Autowired
@@ -32,8 +32,8 @@ public class TaskColumnController {
      */
 
     @GetMapping
-    public List<TaskColumn> getTaskColumns() {
-        return taskColumnService.getTaskColumns();
+    public List<TaskColumn> getTaskColumns(@RequestParam Integer boardId) {
+        return taskColumnService.findByBoardId(boardId);
     }
 
     /**
@@ -61,7 +61,7 @@ public class TaskColumnController {
      */
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteTaskColumn(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteTaskColumn(@PathVariable Integer id) {
         taskColumnService.deleteTaskColumn(id);
 
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class TaskColumnController {
      */
 
     @PatchMapping("/update-name/{id}")
-    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody TaskColumnDTO taskColumnDTO){
+    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody TaskColumnDTO taskColumnDTO) {
         taskColumnService.updateName(id, taskColumnDTO);
 
         return ResponseEntity.noContent().build();

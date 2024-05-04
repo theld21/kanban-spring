@@ -38,12 +38,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Integer id) {
-//        check weather the user is in database or not
-        User user = userRepository
+        // check weather the user is in database or not
+        return userRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
-
-        return user;
     }
 
     /**
@@ -52,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(Integer id, User user) {
-//        check weather the user is in database or not
+        // check weather the user is in database or not
         userRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
@@ -65,18 +63,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Integer id) {
-//        check weather the user is in database or not
+        // check weather the user is in database or not
         User user = userRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
 
         userRepository.delete(user);
     }
 
     @Override
     public void updateName(Integer id, UserDTO userDTO) {
-//        check weather the user is in database or not
+        // check weather the user is in database or not
         User user = userRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
 
         user.setName(userDTO.getName());
 

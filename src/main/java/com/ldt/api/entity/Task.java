@@ -1,8 +1,13 @@
 package com.ldt.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 @Data
@@ -14,6 +19,12 @@ public class Task {
     @GeneratedValue
     private Integer id;
     private String name;
+    @Column(insertable = false, updatable = false)
     private Integer taskColumnId;
+
+    @ManyToOne
+    @JoinColumn(name = "taskColumnId")
+    @JsonIgnore
+    private TaskColumn taskColumn;
 
 }

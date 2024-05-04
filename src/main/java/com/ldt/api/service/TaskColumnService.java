@@ -8,7 +8,7 @@ import java.util.List;
 public interface TaskColumnService {
     void addTaskColumn(TaskColumn taskColumn);
 
-    List<TaskColumn> getTaskColumns();
+    List<TaskColumn> findByBoardId(Integer boardId);
 
     TaskColumn getTaskColumn(Integer id);
 

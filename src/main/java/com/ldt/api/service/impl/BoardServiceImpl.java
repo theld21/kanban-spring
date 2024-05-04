@@ -3,6 +3,7 @@ package com.ldt.api.service.impl;
 import com.ldt.api.dto.BoardDTO;
 import com.ldt.api.entity.Board;
 import com.ldt.api.repository.BoardRepository;
+import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,12 +39,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board getBoard(Integer id) {
-//        check weather the Board is in database or not
-        Board Board = boardRepository
+        // check weather the Board is in database or not
+        return boardRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
-
-        return Board;
     }
 
     /**
@@ -52,7 +51,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void updateBoard(Integer id, Board Board) {
-//        check weather the Board is in database or not
+        // check weather the Board is in database or not
         boardRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
@@ -65,18 +64,20 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void deleteBoard(Integer id) {
-//        check weather the Board is in database or not
+        // check weather the Board is in database or not
         Board Board = boardRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
 
         boardRepository.delete(Board);
     }
 
     @Override
     public void updateName(Integer id, BoardDTO boardDTO) {
-//        check weather the Board is in database or not
+        // check weather the Board is in database or not
         Board Board = boardRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
 
         Board.setName(boardDTO.getName());
 

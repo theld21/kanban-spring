@@ -61,7 +61,7 @@ public class UserController {
      */
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class UserController {
      */
 
     @PatchMapping("/update-name/{id}")
-    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO){
+    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         userService.updateName(id, userDTO);
 
         return ResponseEntity.noContent().build();

@@ -8,7 +8,7 @@ import java.util.List;
 public interface TaskService {
     void addTask(Task task);
 
-    List<Task> getTasks();
+    List<Task> findByTaskColumnId(Integer taskColumnId);
 
     Task getTask(Integer id);
 

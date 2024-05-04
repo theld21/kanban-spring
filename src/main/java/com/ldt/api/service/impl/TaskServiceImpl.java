@@ -2,6 +2,8 @@ package com.ldt.api.service.impl;
 
 import com.ldt.api.dto.TaskDTO;
 import com.ldt.api.entity.Task;
+import com.ldt.api.entity.TaskColumn;
+import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.repository.TaskRepository;
 import com.ldt.api.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,19 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private TaskColumnRepository taskColumnRepository;
 
     /**
      * add task
      */
     @Override
     public void addTask(Task task) {
+        TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:"));
+
+        task.setTaskColumn(taskColumn);
+
         taskRepository.save(task);
     }
 
@@ -28,8 +37,8 @@ public class TaskServiceImpl implements TaskService {
      * get tasks as list
      */
     @Override
-    public List<Task> getTasks() {
-        return taskRepository.findAll();
+    public List<Task> findByTaskColumnId(Integer taskColumnId) {
+        return taskRepository.findByTaskColumnId(taskColumnId);
     }
 
     /**
@@ -38,12 +47,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task getTask(Integer id) {
-//        check weather the task is in database or not
-        Task task = taskRepository
+        // check weather the task is in database or not
+        return taskRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
-
-        return task;
     }
 
     /**
@@ -52,7 +59,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void updateTask(Integer id, Task task) {
-//        check weather the task is in database or not
+        // check weather the task is in database or not
         taskRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
@@ -65,18 +72,20 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Integer id) {
-//        check weather the task is in database or not
+        // check weather the task is in database or not
         Task task = taskRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
 
         taskRepository.delete(task);
     }
 
     @Override
     public void updateName(Integer id, TaskDTO taskDTO) {
-//        check weather the task is in database or not
+        // check weather the task is in database or not
         Task task = taskRepository
-                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
 
         task.setName(taskDTO.getName());
 
