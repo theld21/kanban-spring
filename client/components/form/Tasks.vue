@@ -39,7 +39,7 @@
             <p>Current status</p>
             <select name="status" v-model="taskColumnId">
               <option
-                v-for="column in getBoardColumns(boardId)"
+                v-for="column in columns"
                 :key="column.id"
                 :value="column.id"
               >
@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { useKanbanStore } from "~~/stores";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { storeToRefs } from "pinia";
 
 const isFormOpenState = isTaskFormOpen();
 const taskToEditState = taskToEdit();
@@ -76,6 +77,7 @@ const boardId = route.params.board.toString();
 //Store
 const store = useKanbanStore();
 const { addTaskToColumn, getBoardColumns, editTask } = store;
+const { columns } = storeToRefs(store);
 
 //Refs
 const taskColumnId = ref<string>("");
@@ -88,12 +90,16 @@ const createNewTask = (): void => {
     name: taskName.value,
     description: taskDescription.value,
   };
-  if (useValidator(taskDescription.value, taskName.value)) {
+  if (useValidator(taskName.value)) {
     addTaskToColumn(boardId, taskColumnId.value, newTask);
     resetValues();
     toggleFormModal(false);
   }
 };
+
+onMounted(async () => {
+  getBoardColumns(boardId, false)
+});
 
 const editTaskInfos = (): void => {
   const editedTask = {
@@ -114,7 +120,7 @@ const editTaskInfos = (): void => {
 };
 
 const resetValues = (): void => {
-  taskColumnId.value = getBoardColumns(boardId)![0].id;
+  taskColumnId.value = boardId;
   taskName.value = "";
   taskDescription.value = "";
 };

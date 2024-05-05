@@ -26,7 +26,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void addTask(Task task) {
         TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:"));
 
         task.setTaskColumn(taskColumn);
 
@@ -66,7 +66,30 @@ public class TaskServiceImpl implements TaskService {
 
         task.setId(id);
 
+        TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:"));
+
+        task.setTaskColumn(taskColumn);
+
         taskRepository.save(task);
+
+    }
+
+    /**
+     * move task
+     */
+
+    @Override
+    public void moveTask(Integer id, Task task) {
+        // check weather the task is in database or not
+        Task taskUpdate = taskRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
+
+        taskUpdate.setTaskColumn(taskColumnRepository.findById(task.getTaskColumnId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:")));
+
+        taskRepository.save(taskUpdate);
 
     }
 

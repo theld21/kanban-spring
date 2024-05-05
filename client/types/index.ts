@@ -12,7 +12,7 @@ interface Column extends Base {
 }
 
 interface Board extends Base {
-  columns: Column[];
+  taskColumns: Column[];
 }
 
 interface TaskToEdit extends Task {

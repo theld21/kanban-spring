@@ -19,6 +19,9 @@ public class Task {
     @GeneratedValue
     private Integer id;
     private String name;
+
+    @Column(length = 2000)
+    private String description;
     @Column(insertable = false, updatable = false)
     private Integer taskColumnId;
 

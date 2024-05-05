@@ -32,8 +32,8 @@ public class TaskController {
      */
 
     @GetMapping
-    public List<Task> getTasks(@RequestParam Integer boardId) {
-        return taskService.findByTaskColumnId(boardId);
+    public List<Task> getTasks(@RequestParam Integer taskColumnId) {
+        return taskService.findByTaskColumnId(taskColumnId);
     }
 
     /**
@@ -52,6 +52,17 @@ public class TaskController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateTask(@PathVariable Integer id, @RequestBody Task task) {
         taskService.updateTask(id, task);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * update task
+     */
+
+    @PutMapping("/move/{id}")
+    public ResponseEntity<Void> moveTask(@PathVariable Integer id, @RequestBody Task task) {
+        taskService.moveTask(id, task);
 
         return ResponseEntity.noContent().build();
     }

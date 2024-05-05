@@ -45,8 +45,13 @@ const boardFormState = isAddBoardFormOpen();
 const store = useKanbanStore();
 
 const { boards } = storeToRefs(store);
+const { fetchListBoard } = store;
 
 const boardsCount = computed(() => {
   return boards.value?.length;
+});
+
+onMounted(async () => {
+  fetchListBoard()
 });
 </script>

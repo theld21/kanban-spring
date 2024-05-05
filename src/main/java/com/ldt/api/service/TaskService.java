@@ -14,6 +14,8 @@ public interface TaskService {
 
     void updateTask(Integer id, Task task);
 
+    void moveTask(Integer id, Task task);
+
     void deleteTask(Integer id);
 
     void updateName(Integer id, TaskDTO taskDTO);

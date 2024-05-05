@@ -4,63 +4,61 @@ import { useStorage } from "@vueuse/core";
 
 export const useKanbanStore = defineStore("kanban", {
   state: () => ({
-    boards: useStorage("board", [
-      {
-        id: "499ff073-7759-45c4-a62b-020860056830",
-        name: "Any Board",
-        columns: [
-          {
-            id: "52a3c12c-a755-46e1-9a95-22ab10d61a1d",
-            name: "Todo",
-            tasks: [
-              {
-                id: "52a96e6f-1213-46f6-8ae3-6a8fb00b126e",
-                name: "Title example",
-                description: "Description example",
-              },
-            ],
-          },
-          {
-            id: "c46c6c66-9da0-42f2-97fd-1c212e4e8de2",
-            name: "In Progress",
-            tasks: [],
-          },
-          {
-            id: "3e6f2fa2-1c93-4409-85b7-4660c36a1242",
-            name: "Done",
-            tasks: [],
-          },
-        ],
-      },
-    ] as Board[] | undefined),
+    boards: useStorage("board", [] as Board[] | undefined),
+    columns: useStorage("column", [] as Column[] | undefined),
   }),
-  getters: {
-    getBoardColumns:
-      (state) =>
-      (boardId: string): Column[] | undefined => {
-        const findBoard = state.boards?.find((board) => board.id === boardId);
-        return findBoard?.columns;
-      },
-    getColumnTasks() {
-      return (boardId: string, columnId: string): Task[] | undefined => {
-        const column = this.getBoardColumns(boardId)?.find(
-          (column) => column.id === columnId
-        );
-        return column?.tasks;
-      };
-    },
-  },
   actions: {
-    addTaskToColumn(
+    async getBoardColumns(
+      boardId: string,
+      fetchTask = true
+    ): Column[] | undefined {
+      const findBoard = this.boards?.find((board) => board.id == boardId);
+      const self = this;
+
+      this.columns = findBoard?.taskColumns;
+
+      if (!this.columns || !fetchTask) {
+        return;
+      }
+
+      for (const column of this.columns) {
+        column.tasks = await self.fetchListTask(column.id);
+      }
+    },
+    async getColumnTasks(boardId: string, columnId: string) {
+      const column = this.getBoardColumns(boardId)?.find(
+        (column) => column.id === columnId
+      );
+      if (!column) {
+        return [];
+      }
+      let result = await this.fetchListTask(column?.id);
+
+      return result;
+    },
+    async addTaskToColumn(
       boardId: string,
       columnId: string,
       taskInfos: Omit<Task, "id">
     ) {
-      const newTask = { id: uuidv4(), ...taskInfos };
-      this.boards
-        ?.find((board) => board.id === boardId)!
-        .columns.find((column) => column.id === columnId)!
-        .tasks.push(newTask);
+      const dataCreate = {
+        name: taskInfos.name,
+        taskColumnId: columnId,
+        description: taskInfos.description,
+      };
+      try {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const response = await fetch("http://127.0.0.1:8081/task/add", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(dataCreate),
+        });
+        this.getBoardColumns(boardId);
+      } catch (error) {
+        console.error(error);
+      }
     },
     removeTaskFromColumn(boardId: string, columnId: string, editedTask: Task) {
       const boardTasks = this.getColumnTasks(boardId, columnId);
@@ -72,48 +70,85 @@ export const useKanbanStore = defineStore("kanban", {
         (column) => column.id === columnId
       )!.tasks = filteredTasks;
     },
-    createNewBoard(boardName: string) {
-      const boardTemplate: Board = {
-        id: uuidv4(),
-        name: boardName,
-        columns: [
-          { id: uuidv4(), name: "Todo", tasks: [] },
-          { id: uuidv4(), name: "In Progress", tasks: [] },
-          { id: uuidv4(), name: "Done", tasks: [] },
-        ],
-      };
-      //Modifing state
-      this.boards?.push(boardTemplate);
+    async fetchListBoard() {
+      try {
+        const response = await fetch("http://127.0.0.1:8081/board");
+        this.boards = await response.json();
+      } catch (error) {
+        console.error(error);
+      }
     },
-    editTask(
+    async fetchListTask(columnId: string) {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8081/task?taskColumnId=" + columnId
+        );
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async createNewBoard(boardName: string) {
+      const dataCreate = {
+        name: boardName,
+      };
+      try {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const response = await fetch("http://127.0.0.1:8081/board/add", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(dataCreate),
+        });
+        this.fetchListBoard();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async editTask(
       boardId: string,
       columnId: string,
       newColumnId: string,
-      editedTask: Task
+      editedTask: Task,
+      itemID: string
     ) {
-      const boardTasks = this.getColumnTasks(boardId, columnId);
+      try {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
 
-      //If it has a new status, remove from original column and add to new column
-      if (newColumnId !== columnId) {
-        this.removeTaskFromColumn(boardId, columnId, editedTask);
-        this.addTaskToColumn(boardId, newColumnId, editedTask);
-      } else {
-        const modifiedTasks = boardTasks!.map((task) =>
-          task.id === editedTask.id ? editedTask : task
+        const response = await fetch(
+          "http://127.0.0.1:8081/task/move/" + itemID,
+          {
+            method: "PUT",
+            headers,
+            body: JSON.stringify(editedTask),
+          }
         );
-
-        //Modifing state
-        this.boards!.find((board) => board.id === boardId)!.columns.find(
-          (column) => column.id === columnId
-        )!.tasks = modifiedTasks;
+        this.getBoardColumns(boardId);
+      } catch (error) {
+        console.error(error);
       }
     },
-    createNewColumn(boardId: string, columnName: string) {
-      this.boards!.find((board) => board.id === boardId)!.columns.push({
-        id: uuidv4(),
+    async createNewColumn(boardId: string, columnName: string) {
+      const dataCreate = {
         name: columnName,
-        tasks: [],
-      });
+        boardId,
+      };
+      try {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const response = await fetch("http://127.0.0.1:8081/column/add", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(dataCreate),
+        });
+        this.fetchListBoard();
+      } catch (error) {
+        console.error(error);
+      }
     },
     editColumnName(boardId: string, columnId: string, columnName: string) {
       this.boards!.find((board) => board.id === boardId)!.columns.find(
