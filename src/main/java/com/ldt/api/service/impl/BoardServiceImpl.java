@@ -3,7 +3,6 @@ package com.ldt.api.service.impl;
 import com.ldt.api.dto.BoardDTO;
 import com.ldt.api.entity.Board;
 import com.ldt.api.repository.BoardRepository;
-import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

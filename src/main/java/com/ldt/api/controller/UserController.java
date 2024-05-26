@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -25,6 +26,11 @@ public class UserController {
         userService.addUser(user);
 
         return "success add user";
+    }
+
+    @GetMapping("/info")
+    public String getLoggedInUser(Principal principal){
+        return principal.getName();
     }
 
     /**
