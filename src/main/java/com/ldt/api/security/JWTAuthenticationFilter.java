@@ -11,11 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.ldt.api.entity.User;
+import com.ldt.api.service.UserService;
 
 import java.io.IOException;
 
@@ -26,11 +27,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private JWTHelper jwtHelper;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Authorization=Bearer <token>
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String requestHeader = request.getHeader("Authorization");
         logger.info(" Header :  {}", requestHeader);
@@ -38,7 +39,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
 
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-            //looking good
             token = requestHeader.substring(7);
             logger.info(" token :  {}", token);
             try {
@@ -61,13 +61,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //fetch user detail from username
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            User userDetails = userService.getUserByEmail(username);
             Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
-            logger.info(" validateToken :  {}", token);
             if (validateToken) {
-                //set the authentication
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
@@ -75,5 +73,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+        // Ghi lại thông tin phản hồi
+        System.out.println("Response Status: " + response.getStatus());
     }
 }

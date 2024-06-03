@@ -3,8 +3,8 @@ package com.ldt.api.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import com.ldt.api.entity.User;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class JWTHelper {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     // public static final long JWT_TOKEN_VALIDITY = 60;
-    private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
+    private String secret = "870c6f60f4541e206b9607fdf4b14c66effabd5e5fdf06ca7a92e81c873d83ef0bda5b69f0f42aad8020d07db90a05f06";
 
     // retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -46,9 +46,9 @@ public class JWTHelper {
     }
 
     // generate token for user
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        return doGenerateToken(claims, user.getEmail());
     }
 
     // while creating the token -
@@ -65,8 +65,8 @@ public class JWTHelper {
     }
 
     // validate token
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(String token, User user) {
         final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 }

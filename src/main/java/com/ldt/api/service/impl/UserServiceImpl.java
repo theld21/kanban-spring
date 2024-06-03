@@ -44,6 +44,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid user Id:" + id));
     }
 
+    @Override
+    public User getUserByEmail(String email) {
+        // check weather the user is in database or not
+        return userRepository
+                .findByEmail(email);
+    }
+
     /**
      * update user
      */
