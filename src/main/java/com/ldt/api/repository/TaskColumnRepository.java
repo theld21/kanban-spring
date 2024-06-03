@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TaskColumnRepository extends JpaRepository<TaskColumn, Integer> {
 
   List<TaskColumn> findByBoardId(Integer boardId);
+
+  List<TaskColumn> findByUserId(Integer userId);
 }

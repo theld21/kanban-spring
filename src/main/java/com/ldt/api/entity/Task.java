@@ -24,6 +24,7 @@ public class Task {
     private String description;
     @Column(insertable = false, updatable = false)
     private Integer taskColumnId;
+    private Integer userId;
 
     @ManyToOne
     @JoinColumn(name = "taskColumnId")

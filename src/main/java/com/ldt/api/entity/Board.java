@@ -18,6 +18,7 @@ public class Board {
     @GeneratedValue
     private Integer id;
     private String name;
+    private Integer userId;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<TaskColumn> taskColumns;

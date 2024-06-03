@@ -61,7 +61,7 @@ public class BoardController {
      */
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteBoard(@PathVariable Integer id) {
         boardService.deleteBoard(id);
 
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class BoardController {
      */
 
     @PatchMapping("/update-name/{id}")
-    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody BoardDTO boardDTO){
+    public ResponseEntity<Void> updateName(@PathVariable Integer id, @RequestBody BoardDTO boardDTO) {
         boardService.updateName(id, boardDTO);
 
         return ResponseEntity.noContent().build();

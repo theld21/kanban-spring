@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class TaskColumnDTO {
     private String name;
+    private Integer userId;
 }

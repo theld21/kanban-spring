@@ -25,6 +25,7 @@ public class TaskColumn {
     private String name;
     @Column(insertable = false, updatable = false)
     private Integer boardId;
+    private Integer userId;
 
     @ManyToOne
     @JoinColumn(name = "boardId")

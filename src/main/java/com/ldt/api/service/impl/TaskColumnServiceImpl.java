@@ -6,6 +6,8 @@ import com.ldt.api.entity.TaskColumn;
 import com.ldt.api.repository.BoardRepository;
 import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.service.TaskColumnService;
+import com.ldt.api.util.SecurityUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,11 @@ public class TaskColumnServiceImpl implements TaskColumnService {
      */
     @Override
     public List<TaskColumn> findByBoardId(Integer boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + boardId));
+
+        SecurityUtil.checkAuthor(board.getUserId());
+
         return taskColumnRepository.findByBoardId(boardId);
     }
 

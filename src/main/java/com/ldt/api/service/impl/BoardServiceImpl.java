@@ -2,8 +2,11 @@ package com.ldt.api.service.impl;
 
 import com.ldt.api.dto.BoardDTO;
 import com.ldt.api.entity.Board;
+import com.ldt.api.entity.User;
 import com.ldt.api.repository.BoardRepository;
 import com.ldt.api.service.BoardService;
+import com.ldt.api.util.SecurityUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,8 +23,10 @@ public class BoardServiceImpl implements BoardService {
      * add Board
      */
     @Override
-    public void addBoard(Board Board) {
-        boardRepository.save(Board);
+    public void addBoard(Board board) {
+        User user = SecurityUtil.getCurrentUser();
+        board.setUserId(user.getId());
+        boardRepository.save(board);
     }
 
     /**
@@ -29,55 +34,43 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     public List<Board> getBoards() {
-        return boardRepository.findAll();
+        User user = SecurityUtil.getCurrentUser();
+        return boardRepository.findByUserId(user.getId());
     }
 
     /**
      * get Board by id
      */
-
     @Override
     public Board getBoard(Integer id) {
-        // check weather the Board is in database or not
-        return boardRepository
+        Board board = boardRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
+
+        SecurityUtil.checkAuthor(board.getUserId());
+        return board;
     }
 
     /**
      * update Board
      */
-
     @Override
-    public void updateBoard(Integer id, Board Board) {
-        // check weather the Board is in database or not
-        boardRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
+    public void updateBoard(Integer id, Board board) {
+        this.getBoard(id);
+        board.setId(id);
 
-        Board.setId(id);
-
-        boardRepository.save(Board);
-
+        boardRepository.save(board);
     }
 
     @Override
     public void deleteBoard(Integer id) {
-        // check weather the Board is in database or not
-        Board Board = boardRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
-
-        boardRepository.delete(Board);
+        Board board = this.getBoard(id);
+        boardRepository.delete(board);
     }
 
     @Override
     public void updateName(Integer id, BoardDTO boardDTO) {
-        // check weather the Board is in database or not
-        Board Board = boardRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Board Id:" + id));
-
+        Board Board = this.getBoard(id);
         Board.setName(boardDTO.getName());
 
         boardRepository.save(Board);
