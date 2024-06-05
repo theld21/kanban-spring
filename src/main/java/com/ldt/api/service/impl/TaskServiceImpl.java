@@ -28,6 +28,8 @@ public class TaskServiceImpl implements TaskService {
         TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:"));
 
+        User user = SecurityUtil.getCurrentUser();
+        task.setUserId(user.getId());
         task.setTaskColumn(taskColumn);
 
         taskRepository.save(task);
@@ -38,6 +40,12 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> findByTaskColumnId(Integer taskColumnId) {
+        TaskColumn taskColumn = taskColumnRepository
+                .findById(taskColumnId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid taskColumn Id:" + id));
+
+        SecurityUtil.checkAuthor(taskColumn.getUserId());
+
         return taskRepository.findByTaskColumnId(taskColumnId);
     }
 
@@ -47,10 +55,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task getTask(Integer id) {
-        // check weather the task is in database or not
-        return taskRepository
+        Task task = taskRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
+
+        SecurityUtil.checkAuthor(task.getUserId());
+
+        return taskColumn;
     }
 
     /**
@@ -59,16 +70,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void updateTask(Integer id, Task task) {
-        // check weather the task is in database or not
-        taskRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
-
         task.setId(id);
+        Task oldTask = this.getTask(id)
+        task.setUserId(oldTask.getUserId());
 
-        TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:"));
-
+        TaskColumn taskColumn = this.getTaskColumn(task.getTaskColumnId())
         task.setTaskColumn(taskColumn);
 
         taskRepository.save(task);
@@ -81,35 +87,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void moveTask(Integer id, Task task) {
-        // check weather the task is in database or not
-        Task taskUpdate = taskRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
+        Task oldTask = this.getTask(id);
+        TaskColumn taskColumn = this.getTaskColumn(task.getTaskColumnId())
+        task.setTaskColumn(taskColumn);
 
-        taskUpdate.setTaskColumn(taskColumnRepository.findById(task.getTaskColumnId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:")));
-
-        taskRepository.save(taskUpdate);
-
+        taskRepository.save(task);
     }
 
     @Override
     public void deleteTask(Integer id) {
-        // check weather the task is in database or not
-        Task task = taskRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
-
+        Task task = this.getTask(id);
         taskRepository.delete(task);
     }
 
     @Override
     public void updateName(Integer id, TaskDTO taskDTO) {
-        // check weather the task is in database or not
-        Task task = taskRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid task Id:" + id));
-
+        Task task = this.getTask(id);
         task.setName(taskDTO.getName());
 
         taskRepository.save(task);

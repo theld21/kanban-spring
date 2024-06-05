@@ -56,8 +56,8 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     public void updateBoard(Integer id, Board board) {
-        this.getBoard(id);
-        board.setId(id);
+        Board oldBoard = this.getBoard(id);
+        board.setUserId(oldBoard.getUserId());
 
         boardRepository.save(board);
     }
