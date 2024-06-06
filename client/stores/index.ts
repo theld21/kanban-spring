@@ -166,5 +166,24 @@ export const useKanbanStore = defineStore("kanban", {
         1
       );
     },
+    async login(email: string, password: string) {
+      const dataLogin = {
+        email,
+        password,
+      };
+      try {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const response = await fetch("http://127.0.0.1:8081/auth/login", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(dataLogin),
+        });
+        this.fetchListBoard();
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 });
