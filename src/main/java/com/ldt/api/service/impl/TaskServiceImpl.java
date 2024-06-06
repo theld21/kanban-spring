@@ -3,9 +3,12 @@ package com.ldt.api.service.impl;
 import com.ldt.api.dto.TaskDTO;
 import com.ldt.api.entity.Task;
 import com.ldt.api.entity.TaskColumn;
+import com.ldt.api.entity.User;
 import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.repository.TaskRepository;
 import com.ldt.api.service.TaskService;
+import com.ldt.api.util.SecurityUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void addTask(Task task) {
         TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id:"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id"));
 
         User user = SecurityUtil.getCurrentUser();
         task.setUserId(user.getId());
@@ -42,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> findByTaskColumnId(Integer taskColumnId) {
         TaskColumn taskColumn = taskColumnRepository
                 .findById(taskColumnId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid taskColumn Id:" + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid taskColumn Id"));
 
         SecurityUtil.checkAuthor(taskColumn.getUserId());
 
@@ -61,7 +64,7 @@ public class TaskServiceImpl implements TaskService {
 
         SecurityUtil.checkAuthor(task.getUserId());
 
-        return taskColumn;
+        return task;
     }
 
     /**
@@ -71,10 +74,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void updateTask(Integer id, Task task) {
         task.setId(id);
-        Task oldTask = this.getTask(id)
+        Task oldTask = this.getTask(id);
         task.setUserId(oldTask.getUserId());
 
-        TaskColumn taskColumn = this.getTaskColumn(task.getTaskColumnId())
+        TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id"));
         task.setTaskColumn(taskColumn);
 
         taskRepository.save(task);
@@ -88,7 +92,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void moveTask(Integer id, Task task) {
         Task oldTask = this.getTask(id);
-        TaskColumn taskColumn = this.getTaskColumn(task.getTaskColumnId())
+        TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id"));
         task.setTaskColumn(taskColumn);
 
         taskRepository.save(task);

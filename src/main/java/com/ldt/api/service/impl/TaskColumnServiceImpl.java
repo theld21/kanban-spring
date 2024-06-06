@@ -3,6 +3,7 @@ package com.ldt.api.service.impl;
 import com.ldt.api.dto.TaskColumnDTO;
 import com.ldt.api.entity.Board;
 import com.ldt.api.entity.TaskColumn;
+import com.ldt.api.entity.User;
 import com.ldt.api.repository.BoardRepository;
 import com.ldt.api.repository.TaskColumnRepository;
 import com.ldt.api.service.TaskColumnService;
@@ -71,7 +72,7 @@ public class TaskColumnServiceImpl implements TaskColumnService {
 
     @Override
     public void updateTaskColumn(Integer id, TaskColumn taskColumn) {
-        TaskColumn oldTaskColumn = this.getTaskColumn(id)
+        TaskColumn oldTaskColumn = this.getTaskColumn(id);
         taskColumn.setUserId(oldTaskColumn.getUserId());
 
         taskColumnRepository.save(taskColumn);
