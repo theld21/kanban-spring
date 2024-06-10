@@ -13,7 +13,7 @@
 
         <h2>{{ !!taskToEditState ? "Edit" : "Add" }} Task</h2>
 
-        <div class="w-full h-full space-y-10 pr-8 flex flex-col">
+        <div class="w-full h-full space-y-10 pr-8 flex flex-col overflow-auto">
           <div class="flex flex-col space-y-2">
             <label for="task_name">Title</label>
             <input

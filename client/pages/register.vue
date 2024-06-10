@@ -18,9 +18,13 @@
                       <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                       <input v-model.trim="password" type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                   </div>
-                  <BaseButton label="Sign in" @action="handleLogin" class="bg-savoy mt-6"/>
+                  <div>
+                      <label for="repassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Retype Password</label>
+                      <input v-model.trim="repassword" type="password" name="repassword" id="repassword" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                  </div>
+                  <BaseButton label="Sign in" @action="handleRegister" class="bg-savoy mt-6"/>
                   <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                      Don’t have an account yet? <NuxtLink to="/register" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</NuxtLink>
+                      Have an account? <NuxtLink to="/login" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign in</NuxtLink>
                   </p>
                 </div>
           </div>
@@ -38,12 +42,13 @@ definePageMeta({
 //Refs
 const email = ref<string>("");
 const password = ref<string>("");
+const repassword = ref<string>("");
 
 //Store
 const store = useKanbanStore();
-const { login } = store;
+const { register } = store;
 
-const handleLogin = () => {
-  login(email.value, password.value);
+const handleRegister = () => {
+  register(email.value, password.value);
 };
 </script>
