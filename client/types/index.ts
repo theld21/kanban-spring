@@ -15,6 +15,12 @@ interface Board extends Base {
   taskColumns: Column[];
 }
 
+interface Auth extends Base {
+  token: string;
+  isLoggedIn: Boolean;
+  info: any;
+}
+
 interface TaskToEdit extends Task {
   columnParentId: string;
 }

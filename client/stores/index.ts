@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
-import { v4 as uuidv4 } from "uuid";
 import { useStorage } from "@vueuse/core";
 
 export const useKanbanStore = defineStore("kanban", {
   state: () => ({
     boards: useStorage("board", [] as Board[] | undefined),
     columns: useStorage("column", [] as Column[] | undefined),
+    auth: useStorage("auth", [] as Auth[] | undefined),
   }),
   actions: {
     async getBoardColumns(
@@ -41,19 +41,11 @@ export const useKanbanStore = defineStore("kanban", {
       columnId: string,
       taskInfos: Omit<Task, "id">
     ) {
-      const dataCreate = {
-        name: taskInfos.name,
-        taskColumnId: columnId,
-        description: taskInfos.description,
-      };
       try {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const response = await fetch("http://127.0.0.1:8081/task/add", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(dataCreate),
+        await this.handleFetchData("http://127.0.0.1:8081/api/task/add", {
+          name: taskInfos.name,
+          taskColumnId: columnId,
+          description: taskInfos.description,
         });
         this.getBoardColumns(boardId);
       } catch (error) {
@@ -72,7 +64,7 @@ export const useKanbanStore = defineStore("kanban", {
     },
     async fetchListBoard() {
       try {
-        const response = await fetch("http://127.0.0.1:8081/board");
+        const response = await this.handleFetchData("http://127.0.0.1:8081/api/board");
         this.boards = await response.json();
       } catch (error) {
         console.error(error);
@@ -80,27 +72,16 @@ export const useKanbanStore = defineStore("kanban", {
     },
     async fetchListTask(columnId: string) {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8081/task?taskColumnId=" + columnId
-        );
-        const data = await response.json();
+        const data = await this.handleFetchData('api/task?taskColumnId=' + columnId);
         return data;
       } catch (error) {
         console.error(error);
       }
     },
     async createNewBoard(boardName: string) {
-      const dataCreate = {
-        name: boardName,
-      };
       try {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const response = await fetch("http://127.0.0.1:8081/board/add", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(dataCreate),
+        await this.handleFetchData('api/board/add', {
+          name: boardName,
         });
         this.fetchListBoard();
       } catch (error) {
@@ -109,41 +90,21 @@ export const useKanbanStore = defineStore("kanban", {
     },
     async editTask(
       boardId: string,
-      columnId: string,
-      newColumnId: string,
       editedTask: Task,
       itemID: string
     ) {
       try {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const response = await fetch(
-          "http://127.0.0.1:8081/task/move/" + itemID,
-          {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(editedTask),
-          }
-        );
+        await this.handleFetchData('api/task/move/' + itemID, editedTask);
         this.getBoardColumns(boardId);
       } catch (error) {
         console.error(error);
       }
     },
     async createNewColumn(boardId: string, columnName: string) {
-      const dataCreate = {
-        name: columnName,
-        boardId,
-      };
       try {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const response = await fetch("http://127.0.0.1:8081/column/add", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(dataCreate),
+        this.handleFetchData('api/column/add', {
+          name: columnName,
+          boardId,
         });
         this.fetchListBoard();
       } catch (error) {
@@ -167,23 +128,32 @@ export const useKanbanStore = defineStore("kanban", {
       );
     },
     async login(email: string, password: string) {
-      const dataLogin = {
-        email,
-        password,
-      };
       try {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-
-        const response = await fetch("http://127.0.0.1:8081/auth/login", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(dataLogin),
+        let data = await this.handleFetchData('auth/login', {
+          email,
+          password,
         });
-        this.fetchListBoard();
+        localStorage.setItem('token', data.token);
+        this.auth = {
+          token: '',
+          isLoggedIn: true,
+          info: {},
+        };
       } catch (error) {
         console.error(error);
       }
     },
+    async handleFetchData(path: string, data: any = null){
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${this.auth?.token}`); 
+
+      const response = await fetch("http://127.0.0.1:8081/" + path, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    }
   },
 });
