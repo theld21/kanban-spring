@@ -4,6 +4,7 @@ import com.ldt.api.entity.User;
 import com.ldt.api.security.JWTHelper;
 import com.ldt.api.security.JwtRequest;
 import com.ldt.api.security.JwtResponse;
+import com.ldt.api.security.ResponseHelper;
 import com.ldt.api.service.UserService;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class AuthController {
 
         User user = userService.getUserByEmail(email);
         if (Objects.equals(user.getPassword(), password)) {
-            System.out.println("User successssssss: " + user);
+            System.out.println("User: " + user);
         } else {
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }
@@ -43,13 +44,13 @@ public class AuthController {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public String exceptionHandler() {
-        return "Credentials Invalid !!";
+    public ResponseEntity exceptionHandler() {
+        return ResponseHelper.responseMsg("success add user", HttpStatus.FORBIDDEN);
     }
 
     @PostMapping("/register")
-    public String addUser(@RequestBody User user) {
+    public ResponseEntity addUser(@RequestBody User user) {
         userService.addUser(user);
-        return "success add user";
+        return ResponseHelper.responseMsg("success add user", HttpStatus.OK);
     }
 }

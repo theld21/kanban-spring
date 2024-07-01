@@ -2,8 +2,10 @@ package com.ldt.api.controller;
 
 import com.ldt.api.dto.TaskColumnDTO;
 import com.ldt.api.entity.TaskColumn;
+import com.ldt.api.security.ResponseHelper;
 import com.ldt.api.service.TaskColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,10 @@ public class TaskColumnController {
      */
 
     @PostMapping("/add")
-    public String addTaskColumn(@RequestBody TaskColumn taskColumn) {
+    public ResponseEntity addTaskColumn(@RequestBody TaskColumn taskColumn) {
         taskColumnService.addTaskColumn(taskColumn);
 
-        return "success add taskColumn";
+        return ResponseHelper.responseMsg("success add column", HttpStatus.OK);
     }
 
     /**

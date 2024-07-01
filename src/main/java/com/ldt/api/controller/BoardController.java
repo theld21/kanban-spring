@@ -2,8 +2,10 @@ package com.ldt.api.controller;
 
 import com.ldt.api.dto.BoardDTO;
 import com.ldt.api.entity.Board;
+import com.ldt.api.security.ResponseHelper;
 import com.ldt.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,10 @@ public class BoardController {
      */
 
     @PostMapping("/add")
-    public String addBoard(@RequestBody Board board) {
+    public ResponseEntity addBoard(@RequestBody Board board) {
         boardService.addBoard(board);
 
-        return "success add board";
+        return ResponseHelper.responseMsg("success add board", HttpStatus.OK);
     }
 
     /**

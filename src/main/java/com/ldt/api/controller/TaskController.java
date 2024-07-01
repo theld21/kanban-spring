@@ -2,8 +2,10 @@ package com.ldt.api.controller;
 
 import com.ldt.api.dto.TaskDTO;
 import com.ldt.api.entity.Task;
+import com.ldt.api.security.ResponseHelper;
 import com.ldt.api.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,10 @@ public class TaskController {
      */
 
     @PostMapping("/add")
-    public String addTask(@RequestBody Task task) {
+    public ResponseEntity addTask(@RequestBody Task task) {
         taskService.addTask(task);
 
-        return "success add task";
+        return ResponseHelper.responseMsg("success add task", HttpStatus.OK);
     }
 
     /**

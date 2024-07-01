@@ -2,10 +2,12 @@ package com.ldt.api.controller;
 
 import com.ldt.api.dto.UserDTO;
 import com.ldt.api.entity.User;
+import com.ldt.api.security.ResponseHelper;
 import com.ldt.api.service.UserService;
 import com.ldt.api.util.SecurityUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,10 +28,10 @@ public class UserController {
      */
 
     @PostMapping("/add")
-    public String addUser(@RequestBody User user) {
+    public ResponseEntity addUser(@RequestBody User user) {
         userService.addUser(user);
 
-        return "success add user";
+        return ResponseHelper.responseMsg("success add user", HttpStatus.OK);
     }
 
     @GetMapping("/info")

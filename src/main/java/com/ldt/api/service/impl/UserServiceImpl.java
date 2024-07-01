@@ -21,6 +21,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void addUser(User user) {
+        User existUser = userRepository
+                .findByEmail(user.getEmail());
+
+        if (existUser != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
         userRepository.save(user);
     }
 
