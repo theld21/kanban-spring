@@ -51,7 +51,7 @@ public class TaskController {
      * update task
      */
 
-    @PutMapping("/update/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<Void> updateTask(@PathVariable Integer id, @RequestBody Task task) {
         taskService.updateTask(id, task);
 
@@ -62,7 +62,7 @@ public class TaskController {
      * update task
      */
 
-    @PutMapping("/move/{id}")
+    @PostMapping("/move/{id}")
     public ResponseEntity<Void> moveTask(@PathVariable Integer id, @RequestBody Task task) {
         taskService.moveTask(id, task);
 

@@ -110,7 +110,7 @@ export const useKanbanStore = defineStore("kanban", {
         let data = await this.handleFetchData(
           "api/task/move/" + itemID,
           editedTask,
-          "POST"
+          "PUT"
         );
         if (!this.filterError(data)) return;
 
@@ -121,7 +121,7 @@ export const useKanbanStore = defineStore("kanban", {
     },
     async createNewColumn(boardId: string, columnName: string) {
       try {
-        let data = this.handleFetchData(
+        let data = await this.handleFetchData(
           "api/column/add",
           {
             name: columnName,
@@ -131,8 +131,8 @@ export const useKanbanStore = defineStore("kanban", {
         );
 
         if (!this.filterError(data)) return;
-
-        this.fetchListBoard();
+        await this.fetchListBoard();
+        this.getBoardColumns(boardId);
       } catch (error) {
         console.error(error);
       }
@@ -173,6 +173,18 @@ export const useKanbanStore = defineStore("kanban", {
           },
         };
         await navigateTo("/");
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async logout() {
+      try {
+        this.auth = {
+          token: "",
+          isLoggedIn: false,
+          info: {},
+        };
+        await navigateTo("/login");
       } catch (error) {
         console.error(error);
       }

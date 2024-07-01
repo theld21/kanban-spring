@@ -30,6 +30,12 @@
       >
         <ViewColumnsIcon class="w-5 h-5" />+ Create New Board
       </div>
+      <div
+        class="px-5 py-3 mr-5 flex gap-2 items-center text-red-500 cursor-pointer hover:bg-gray-500/20 transition-colors rounded-r-3xl"
+        @click="handleLogout"
+      >
+        LOGOUT
+      </div>
     </aside>
     <slot></slot>
     <FormAddBoard />
@@ -45,12 +51,15 @@ const boardFormState = isAddBoardFormOpen();
 const store = useKanbanStore();
 
 const { boards } = storeToRefs(store);
-const { fetchListBoard } = store;
+const { fetchListBoard, logout } = store;
 
 const boardsCount = computed(() => {
   return boards.value?.length;
 });
 
+const handleLogout = () => {
+  logout();
+};
 onMounted(async () => {
   fetchListBoard()
 });
