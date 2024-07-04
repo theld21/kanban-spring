@@ -73,16 +73,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void updateTask(Integer id, Task task) {
-        task.setId(id);
         Task oldTask = this.getTask(id);
-        task.setUserId(oldTask.getUserId());
+        oldTask.setName(task.getName());
+        oldTask.setDescription(task.getDescription());
 
         TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id"));
-        task.setTaskColumn(taskColumn);
+        oldTask.setTaskColumn(taskColumn);
 
-        taskRepository.save(task);
-
+        taskRepository.save(oldTask);
     }
 
     /**
@@ -94,9 +93,9 @@ public class TaskServiceImpl implements TaskService {
         Task oldTask = this.getTask(id);
         TaskColumn taskColumn = taskColumnRepository.findById(task.getTaskColumnId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid Task Column Id"));
-        task.setTaskColumn(taskColumn);
+        oldTask.setTaskColumn(taskColumn);
 
-        taskRepository.save(task);
+        taskRepository.save(oldTask);
     }
 
     @Override

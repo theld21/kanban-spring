@@ -52,10 +52,10 @@ public class TaskController {
      */
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<Void> updateTask(@PathVariable Integer id, @RequestBody Task task) {
+    public ResponseEntity updateTask(@PathVariable Integer id, @RequestBody Task task) {
         taskService.updateTask(id, task);
 
-        return ResponseEntity.noContent().build();
+        return ResponseHelper.responseMsg("success update task", HttpStatus.OK);
     }
 
     /**
@@ -63,10 +63,10 @@ public class TaskController {
      */
 
     @PostMapping("/move/{id}")
-    public ResponseEntity<Void> moveTask(@PathVariable Integer id, @RequestBody Task task) {
+    public ResponseEntity moveTask(@PathVariable Integer id, @RequestBody Task task) {
         taskService.moveTask(id, task);
 
-        return ResponseEntity.noContent().build();
+        return ResponseHelper.responseMsg("success move task", HttpStatus.OK);
     }
 
     /**

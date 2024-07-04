@@ -105,12 +105,37 @@ export const useKanbanStore = defineStore("kanban", {
         console.error(error);
       }
     },
-    async editTask(boardId: string, editedTask: Task, itemID: string) {
+    async editTask(
+      boardId: string,
+      itemID: string,
+      oldColumnId: Task,
+      editedTask: Task
+    ) {
+      try {
+        let data = await this.handleFetchData(
+          "api/task/update/" + editedTask.id,
+          editedTask,
+          "POST"
+        );
+        if (!this.filterError(data)) return;
+
+        this.getBoardColumns(boardId);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async moveTask(
+      boardId: string,
+      fromColumnId: any,
+      toColumnId: any,
+      taskData: any,
+      itemID: string
+    ) {
       try {
         let data = await this.handleFetchData(
           "api/task/move/" + itemID,
-          editedTask,
-          "PUT"
+          taskData,
+          "POST"
         );
         if (!this.filterError(data)) return;
 
@@ -147,11 +172,19 @@ export const useKanbanStore = defineStore("kanban", {
       findBoard.name = newBoardName;
       findBoard.columns = newColumnsName;
     },
-    deleteBoard(boardId: string) {
-      this.boards!.splice(
-        this.boards!.findIndex((board) => board.id === boardId),
-        1
-      );
+    async deleteTask(boardId: string, taskId: string) {
+      try {
+        let data = await this.handleFetchData(
+          "api/task/delete/" + taskId,
+          null,
+          "DELETE"
+        );
+        if (!this.filterError(data)) return;
+
+        this.getBoardColumns(boardId);
+      } catch (error) {
+        console.error(error);
+      }
     },
     async login(email: string, password: string) {
       try {
