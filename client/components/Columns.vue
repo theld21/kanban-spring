@@ -40,7 +40,7 @@ const boardId = route.params.board.toString();
 
 //Store
 const store = useKanbanStore();
-const { getBoardColumns, fetchListTask, editTask } = store;
+const { getBoardColumns, fetchListTask, moveTask } = store;
 const { columns } = storeToRefs(store);
 
 //Refs
@@ -73,6 +73,6 @@ const onDrop = (event: DragEvent, columnId: string): void => {
   const fromColumnId = event.dataTransfer!.getData("fromColumnId");
 
   const data = {"taskColumnId": columnId}
-  editTask(boardId, fromColumnId, columnId, data, itemID);
+  moveTask(boardId, fromColumnId, columnId, data, itemID);
 };
 </script>
