@@ -9,5 +9,8 @@ yarn install
 # Start services
 yarn run dev
 
+
+rm /tmp/nitro/worker-82-1.sock
+
 # Finally call command issued to the docker service
 exec "$@"
